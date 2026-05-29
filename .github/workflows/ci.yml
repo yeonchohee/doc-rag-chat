@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt pytest httpx
+
+      - name: Run tests
+        run: pytest backend/tests/ -v
+        env:
+          OPENAI_API_KEY: test-key
+          SQLITE_DB_PATH: /tmp/test_app.db
+          CHROMA_PERSIST_DIR: /tmp/test_chroma
+
+      - name: Trigger Render deploy (main only)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
