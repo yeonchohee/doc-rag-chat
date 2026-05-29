@@ -1,0 +1,18 @@
+# 작업 지시서 (커밋 제외)
+SPEC.md
+
+# 백엔드
+backend/.env
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/chroma_store/
+backend/db/app.db
+
+# 프론트엔드
+frontend/node_modules/
+frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
