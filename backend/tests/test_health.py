@@ -1,7 +1,15 @@
+import pytest
 from fastapi.testclient import TestClient
 from main import app
 
 client = TestClient(app)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_test_db():
+    from db.sqlite import init_db
+    init_db()
+    yield
 
 
 def test_health():
