@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: doc-rag-chat-backend
+    runtime: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CHROMA_PERSIST_DIR
+        value: ./chroma_store
+      - key: SQLITE_DB_PATH
+        value: ./db/app.db
+      - key: MAX_FILE_SIZE_MB
+        value: "10"
+      - key: SESSION_EXPIRE_HOURS
+        value: "24"

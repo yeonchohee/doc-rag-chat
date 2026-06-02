@@ -61,15 +61,11 @@ async def stream_chat(session_id: str, question: str, doc_ids: list[str] = []) -
         stream=True,
     )
 
-    full_answer = []
     for chunk in stream:
         delta = chunk.choices[0].delta.content
         if delta:
-            full_answer.append(delta)
             yield f"data: {json.dumps({'type': 'chunk', 'content': delta})}\n\n"
 
     sources = [{"doc_id": c["doc_id"], "filename": c["filename"], "chunk_text": c["chunk_text"]} for c in chunks]
     yield f"data: {json.dumps({'type': 'sources', 'content': sources})}\n\n"
     yield f"data: {json.dumps({'type': 'done'})}\n\n"
-
-    return "".join(full_answer)
