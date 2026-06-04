@@ -26,6 +26,23 @@ export async function deleteSession(sessionId) {
   return res.json()
 }
 
+function adminHeaders(password) {
+  return { Authorization: 'Basic ' + btoa('admin:' + password) }
+}
+
+export async function fetchAdminSessions(password) {
+  const res = await fetch(`${BASE_URL}/admin/sessions`, { headers: adminHeaders(password) })
+  if (res.status === 401) throw new Error('401')
+  if (!res.ok) throw new Error('Failed to fetch sessions')
+  return res.json()
+}
+
+export async function fetchAdminSessionDetail(sessionId, password) {
+  const res = await fetch(`${BASE_URL}/admin/sessions/${sessionId}`, { headers: adminHeaders(password) })
+  if (!res.ok) throw new Error('Failed to fetch session detail')
+  return res.json()
+}
+
 export function streamChat(sessionId, question, docIds = []) {
   return fetch(`${BASE_URL}/chat`, {
     method: 'POST',
