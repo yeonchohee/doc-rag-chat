@@ -1,6 +1,6 @@
 import os
 import tempfile
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader
 
 CHUNK_SIZE = 500

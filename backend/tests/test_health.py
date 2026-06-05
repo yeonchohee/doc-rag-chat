@@ -15,9 +15,12 @@ def test_health(client):
     assert response.json() == {"status": "ok"}
 
 
-def test_session_not_found(client):
+def test_session_auto_created(client):
     response = client.get("/session/00000000-0000-0000-0000-000000000000")
-    assert response.status_code == 404
+    assert response.status_code == 200
+    data = response.json()
+    assert data["session_id"] == "00000000-0000-0000-0000-000000000000"
+    assert data["documents"] == []
 
 
 def test_upload_wrong_type(client):
