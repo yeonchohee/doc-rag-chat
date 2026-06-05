@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from models.schemas import SessionResponse, DocumentInfo
-from db.sqlite import get_session, get_session_documents, delete_session
+from db.sqlite import get_session, get_session_documents, delete_session, upsert_session
 from db.chroma import delete_collection
 
 router = APIRouter()
@@ -11,7 +11,8 @@ router = APIRouter()
 async def get_session_info(session_id: str):
     session = get_session(session_id)
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+        upsert_session(session_id)
+        session = get_session(session_id)
 
     docs_raw = get_session_documents(session_id)
     documents = [DocumentInfo(**d) for d in docs_raw]
