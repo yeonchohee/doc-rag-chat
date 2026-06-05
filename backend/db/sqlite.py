@@ -86,6 +86,15 @@ def get_session(session_id: str) -> dict | None:
         return dict(row) if row else None
 
 
+def get_session_chat_logs(session_id: str) -> list[dict]:
+    with db_conn() as conn:
+        rows = conn.execute(
+            "SELECT question, answer, created_at FROM chat_logs WHERE session_id = ? ORDER BY created_at ASC",
+            (session_id,)
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+
 def log_chat(session_id: str, question: str, answer: str):
     with db_conn() as conn:
         conn.execute(

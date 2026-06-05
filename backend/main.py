@@ -1,5 +1,6 @@
 import os
 import json
+from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,7 +11,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import upload, chat, session, admin
 from db.sqlite import init_db
 
-app = FastAPI(title="doc-rag-chat", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="doc-rag-chat", version="1.0.0", lifespan=lifespan)
 
 # CORS
 cors_origins_raw = os.getenv("CORS_ORIGINS", '["http://localhost:5173"]')
@@ -31,11 +39,6 @@ app.include_router(upload.router)
 app.include_router(chat.router)
 app.include_router(session.router)
 app.include_router(admin.router)
-
-
-@app.on_event("startup")
-async def startup():
-    init_db()
 
 
 @app.get("/health")

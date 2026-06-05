@@ -1,10 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>doc-rag-chat</title>
+    <script>
+      // GitHub Pages SPA 라우팅 복원
+      var redirect = sessionStorage.getItem('spa_redirect')
+      if (redirect) {
+        sessionStorage.removeItem('spa_redirect')
+        history.replaceState(null, null, redirect)
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

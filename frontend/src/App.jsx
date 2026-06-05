@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { useSession } from './hooks/useSession'
 import UploadZone from './components/UploadZone'
 import DocList from './components/DocList'
 import ChatWindow from './components/ChatWindow'
+import AdminPage from './pages/AdminPage'
 
-export default function App() {
+function MainPage() {
   const { sessionId, documents, loading, addDocument, resetSession } = useSession()
   const [selectedIds, setSelectedIds] = useState([])
 
@@ -54,5 +56,14 @@ export default function App() {
         </main>
       </div>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<MainPage />} />
+      <Route path="/admin" element={<AdminPage />} />
+    </Routes>
   )
 }
