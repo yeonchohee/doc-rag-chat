@@ -26,14 +26,16 @@ export default function UploadZone({ sessionId, onUploaded }) {
   function onDrop(e) {
     e.preventDefault()
     setDragging(false)
-    const file = e.dataTransfer.files[0]
-    handleFile(file)
+    handleFile(e.dataTransfer.files[0])
   }
+
+  const borderClass = dragging
+    ? 'border-[#aaff00] bg-[#aaff00]/5'
+    : 'border-[#2a2a2a] hover:border-[#aaff00]/50'
 
   return (
     <div
-      className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors
-        ${dragging ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-blue-300'}`}
+      className={`border border-dashed rounded p-8 text-center cursor-pointer transition-all duration-150 ${borderClass}`}
       onDragOver={e => { e.preventDefault(); setDragging(true) }}
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
@@ -48,18 +50,18 @@ export default function UploadZone({ sessionId, onUploaded }) {
       />
 
       {uploading ? (
-        <div className="flex flex-col items-center gap-2 text-blue-500">
-          <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm">인덱싱 중...</span>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-5 h-5 border-2 border-[#aaff00] border-t-transparent rounded-full animate-spin" />
+          <span className="text-[#aaff00] text-xs tracking-widest">인덱싱 중...</span>
         </div>
       ) : (
-        <div className="text-gray-500">
-          <p className="text-lg font-medium">문서를 드래그하거나 클릭해서 업로드</p>
-          <p className="text-sm mt-1">PDF · TXT · DOCX (최대 10MB)</p>
+        <div className="space-y-2">
+          <p className="text-[#555555] text-xs">드래그 또는 클릭</p>
+          <p className="text-[#333333] text-xs">PDF · TXT · DOCX · max 10MB</p>
         </div>
       )}
 
-      {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
     </div>
   )
 }

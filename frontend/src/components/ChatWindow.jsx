@@ -19,8 +19,6 @@ export default function ChatWindow({ sessionId, selectedDocIds }) {
 
     setInput('')
     setMessages(prev => [...prev, { role: 'user', content: question }])
-
-    const assistantIndex = messages.length + 1
     setMessages(prev => [...prev, { role: 'assistant', content: '', sources: null }])
 
     await sendMessage(
@@ -50,44 +48,62 @@ export default function ChatWindow({ sessionId, selectedDocIds }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-5 space-y-5">
         {messages.length === 0 && (
-          <p className="text-center text-gray-400 text-sm mt-8">문서를 업로드하고 질문해보세요</p>
+          <p className="text-center text-[#333333] text-xs mt-10">
+            질문을 입력하세요
+          </p>
         )}
         {messages.map((msg, i) => (
-          <MessageBubble key={i} role={msg.role} content={msg.content} sources={msg.sources} />
+          <MessageBubble
+            key={i}
+            role={msg.role}
+            content={msg.content}
+            sources={msg.sources}
+          />
         ))}
-        {streaming && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-              </div>
+
+        {/* Typing indicator */}
+        {streaming && messages[messages.length - 1]?.content === '' && (
+          <div className="flex justify-start pl-1">
+            <div className="flex gap-1.5 items-center">
+              {[0, 150, 300].map(delay => (
+                <span
+                  key={delay}
+                  className="w-1.5 h-1.5 bg-[#aaff00] rounded-full animate-bounce"
+                  style={{ animationDelay: `${delay}ms` }}
+                />
+              ))}
             </div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4 flex gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder="문서에 대해 질문하세요..."
-          disabled={streaming}
-          className="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-400 disabled:bg-gray-50"
-        />
-        <button
-          type="submit"
-          disabled={streaming || !input.trim()}
-          className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-        >
-          전송
-        </button>
-      </form>
+      {/* Input */}
+      <div className="border-t border-[#1e1e1e] p-4">
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="질문을 입력하세요..."
+            disabled={streaming}
+            className="flex-1 bg-[#111111] border border-[#222222] rounded px-4 py-2.5 text-xs text-[#e0e0e0] placeholder-[#333333]
+              focus:outline-none focus:border-[#aaff00]/50
+              disabled:opacity-40 transition-colors"
+          />
+          <button
+            type="submit"
+            disabled={streaming || !input.trim()}
+            className="bg-[#aaff00] hover:bg-[#bbff33] disabled:bg-[#1e1e1e] disabled:text-[#333333]
+              text-[#0a0a0a] px-5 py-2.5 rounded text-xs font-medium transition-colors"
+          >
+            전송
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

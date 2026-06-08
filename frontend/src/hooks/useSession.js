@@ -8,6 +8,7 @@ export function useSession() {
   const [sessionId, setSessionId] = useState(null)
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
+  const [serverWaking, setServerWaking] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -16,10 +17,13 @@ export function useSession() {
         id = uuidv4()
         localStorage.setItem(SESSION_KEY, id)
       }
-
       setSessionId(id)
 
+      const wakeTimer = setTimeout(() => setServerWaking(true), 1500)
       const session = await getSession(id).catch(() => null)
+      clearTimeout(wakeTimer)
+      setServerWaking(false)
+
       if (session) {
         setDocuments(session.documents || [])
       }
@@ -39,5 +43,5 @@ export function useSession() {
     setDocuments([])
   }
 
-  return { sessionId, documents, loading, addDocument, resetSession }
+  return { sessionId, documents, loading, serverWaking, addDocument, resetSession }
 }
