@@ -1,4 +1,14 @@
 import { useState } from 'react'
+import Markdown from 'react-markdown'
+
+// AI 답변은 마크다운으로 오므로 목록·강조를 렌더링한다. 테마에 맞춰 최소한의 스타일만 준다.
+const markdownComponents = {
+  p: ({ children }) => <p className="my-1.5 first:mt-0 last:mb-0">{children}</p>,
+  ul: ({ children }) => <ul className="list-disc pl-4 my-1.5 space-y-0.5">{children}</ul>,
+  ol: ({ children }) => <ol className="list-decimal pl-4 my-1.5 space-y-0.5">{children}</ol>,
+  strong: ({ children }) => <strong className="font-semibold text-[#aaff00]">{children}</strong>,
+  code: ({ children }) => <code className="bg-[#0a0a0a] px-1 rounded">{children}</code>,
+}
 
 export default function MessageBubble({ role, content, sources }) {
   const [showSources, setShowSources] = useState(false)
@@ -14,14 +24,18 @@ export default function MessageBubble({ role, content, sources }) {
 
         {/* Bubble */}
         <div
-          className={`px-4 py-3 rounded text-xs leading-relaxed whitespace-pre-wrap
+          className={`px-4 py-3 rounded text-xs leading-relaxed
             ${isUser
-              ? 'bg-[#aaff00] text-[#0a0a0a] font-medium'
+              ? 'bg-[#aaff00] text-[#0a0a0a] font-medium whitespace-pre-wrap'
               : 'bg-[#161616] text-[#dddddd] border border-[#222222]'
             }`}
         >
-          {content || (
+          {!content ? (
             <span className="text-[#555555] italic">생성 중...</span>
+          ) : isUser ? (
+            content
+          ) : (
+            <Markdown components={markdownComponents}>{content}</Markdown>
           )}
         </div>
 

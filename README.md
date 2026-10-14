@@ -131,6 +131,27 @@ chroma_client.get_or_create_collection(
 
 ---
 
+### 출처 표시 기준: 거리 컷오프 + "찾을 수 없음" 판정
+
+검색은 항상 Top-5를 가져오기 때문에, 처음에는 문서에 없는 질문에도 관련 없는 청크 5개가 출처로 붙었습니다. 그래서 화면에 보여줄 출처를 따로 고릅니다.
+
+- 답변이 "문서에서 찾을 수 없습니다"로 시작하면 출처를 보여주지 않습니다.
+- 그 외에는 코사인 거리 0.7 이하인 청크만 보여주고, 하나도 없으면 가장 가까운 청크 하나를 남깁니다.
+
+샘플 문서로 측정했을 때 관련 질문의 최근접 거리는 0.41~0.64, 관련 없는 질문은 0.70~0.85였습니다. 경계가 좁아 이 값으로 답변 자체를 막으면 맞는 질문까지 거절할 수 있습니다. 그래서 LLM에는 Top-5를 그대로 넘기고, 컷오프는 출처를 고르는 데만 씁니다.
+
+```python
+# backend/services/rag.py
+def select_sources(chunks, answer):
+    if not chunks or answer.strip().startswith(NOT_FOUND_ANSWER):
+        return []
+    ranked = sorted(chunks, key=lambda c: c["distance"])
+    relevant = [c for c in ranked if c["distance"] <= SOURCE_MAX_DISTANCE]
+    return relevant or ranked[:1]
+```
+
+---
+
 ## 로컬 실행
 
 ### 요구사항
